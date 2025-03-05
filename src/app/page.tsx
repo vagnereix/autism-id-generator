@@ -1,95 +1,37 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
+import { useIdStore } from "@/store/id/id-store";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { QRCodeSVG } from "qrcode.react";
-import { Margin, Resolution, usePDF, type Options } from "react-to-pdf";
-
-import html2canvas from "html2canvas";
-
-const options: Options = {
-  resolution: Resolution.EXTREME,
-  page: {
-    margin: Margin.MEDIUM,
-  },
-  canvas: {
-    mimeType: "image/png",
-    qualityRatio: 1,
-  },
-  overrides: {
-    pdf: {
-      compress: false,
-    },
-    canvas: {
-      useCORS: true,
-    },
-  },
-};
+import { usePDFGenerator } from "@/hooks/use-pdf-generator";
 
 export default function IdCardGenerator() {
-  const { toPDF, targetRef } = usePDF({
-    filename: "cartao-identificacao-autismo.pdf",
-  });
+  const { targetRef, generatePDF } = usePDFGenerator("autism-id-card");
+  const { data, setData, photo, setPhoto } = useIdStore();
 
-  const [formData, setFormData] = useState({
-    fullName: "Anny Queiroz dos Reis",
-    firstContact: {
-      name: "Andreina Queiroz",
-      phone: "88 99736-5272",
-    },
-    secondContact: {
-      name: "Vagneuton Reis",
-      phone: "88 99954-6683",
-    },
-    address: "Nova Acopiara",
-    diagnosticLink:
-      "https://drive.google.com/file/d/1hcjEiTPz9_RCUuUZqf6kOK6Lb5SZDOnz/view?usp=sharing",
-    additionalInfo: "",
-    cid: "6A02",
-    dateOfBirth: "2001-02-15",
-  });
-  const [photo, setPhoto] = useState<string | null>("/fallback.webp");
-
-  const handleInputChange = (
+  function handleInputChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  ) {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    setData({ [name]: value });
+  }
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
+
       reader.onload = (e) => {
         setPhoto(e.target?.result as string);
       };
+
       reader.readAsDataURL(e.target.files[0]);
     }
-  };
-
-  const generatePDF = async () => {
-    // if (targetRef.current) {
-    //   const canvas = await html2canvas(targetRef.current, {
-    //     useCORS: true,
-    //     scale: 2, // aumenta a qualidade da imagem
-    //     logging: false,
-    //     allowTaint: true,
-    //   });
-
-    //   const image = canvas.toDataURL("image/png", 1.0);
-
-    //   const link = document.createElement("a");
-    //   link.download = "cartao-identificacao-autismo.png";
-    //   link.href = image;
-    //   link.click();
-    // }
-
-    toPDF(options);
-  };
+  }
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8">
@@ -102,7 +44,7 @@ export default function IdCardGenerator() {
             <Input
               id="fullName"
               name="fullName"
-              defaultValue={formData.fullName}
+              defaultValue={data?.fullName}
               onChange={handleInputChange}
             />
           </div>
@@ -111,7 +53,7 @@ export default function IdCardGenerator() {
             <Input
               id="cid"
               name="cid"
-              defaultValue={formData.cid}
+              defaultValue={data?.cid}
               onChange={handleInputChange}
             />
           </div>
@@ -121,7 +63,7 @@ export default function IdCardGenerator() {
               <Input
                 id="firstContactName"
                 name="firstContactName"
-                defaultValue={formData.firstContact.name}
+                defaultValue={data.firstContact?.name}
                 onChange={handleInputChange}
               />
             </div>
@@ -131,7 +73,7 @@ export default function IdCardGenerator() {
               <Input
                 id="firstContactPhone"
                 name="firstContactPhone"
-                defaultValue={formData.firstContact.phone}
+                defaultValue={data.firstContact?.phone}
                 onChange={handleInputChange}
               />
             </div>
@@ -142,7 +84,7 @@ export default function IdCardGenerator() {
               <Input
                 id="secondContactName"
                 name="secondContactName"
-                defaultValue={formData.secondContact.name}
+                defaultValue={data.secondContact?.name}
                 onChange={handleInputChange}
               />
             </div>
@@ -152,7 +94,7 @@ export default function IdCardGenerator() {
               <Input
                 id="secondContactPhone"
                 name="secondContactPhone"
-                defaultValue={formData.secondContact.phone}
+                defaultValue={data.secondContact?.phone}
                 onChange={handleInputChange}
               />
             </div>
@@ -162,7 +104,7 @@ export default function IdCardGenerator() {
             <Input
               id="address"
               name="address"
-              defaultValue={formData.address}
+              defaultValue={data?.address}
               onChange={handleInputChange}
             />
           </div>
@@ -171,7 +113,7 @@ export default function IdCardGenerator() {
             <Input
               id="diagnosticLink"
               name="diagnosticLink"
-              defaultValue={formData.diagnosticLink}
+              defaultValue={data?.diagnosticLink}
               onChange={handleInputChange}
             />
           </div>
@@ -180,7 +122,7 @@ export default function IdCardGenerator() {
             <Textarea
               id="additionalInfo"
               name="additionalInfo"
-              defaultValue={formData.additionalInfo}
+              defaultValue={data?.additionalInfo}
               onChange={handleInputChange}
             />
           </div>
@@ -236,10 +178,8 @@ export default function IdCardGenerator() {
             <section className="w-full flex flex-col items-center gap-2 mt-4 justify-center absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2">
               <strong className="w-2/3 leading-tight font-semibold text-center p-1 py-[.5] text-blue-700 text-xs text-balance rounded-sm uppercase">
                 Transtorno do Espectro Autista
-                {formData.cid && (
-                  <p className="font-medium text-[8px]">
-                    CID-11: {formData.cid}
-                  </p>
+                {data?.cid && (
+                  <p className="font-medium text-[8px]">CID-11: {data?.cid}</p>
                 )}
               </strong>
 
@@ -252,7 +192,7 @@ export default function IdCardGenerator() {
               )}
 
               <strong className="p-4 leading-tight py-[.5] text-blue-700 text-sm text-center font-semibold rounded-sm text-balance">
-                {formData.fullName}
+                {data?.fullName}
               </strong>
 
               <span className="text-[8px] space-y-1 w-full text-center px-2 text-balance leading-tight">
@@ -299,7 +239,7 @@ export default function IdCardGenerator() {
             </div>
 
             <div className="flex justify-center mt-8 [&_svg_>_path:first-of-type]:fill-transparent">
-              <QRCodeSVG value={formData.diagnosticLink} size={60} />
+              <QRCodeSVG value={data?.diagnosticLink ?? ""} size={60} />
             </div>
 
             <div className="text-center -mt-2 mb-2 h-fit">
@@ -315,12 +255,12 @@ export default function IdCardGenerator() {
             <div className="mb-2 text-[10px] space-y-1 text-center text-balance bg-blue-700 text-gray-50 rounded-sm p-1">
               <p className="flex flex-col">
                 <span>
-                  <strong>{formData.firstContact.name}</strong>:{" "}
-                  {formData.firstContact.phone}
+                  <strong>{data.firstContact?.name}</strong>:{" "}
+                  {data.firstContact?.phone}
                 </span>
                 <span>
-                  <strong>{formData.secondContact.name}</strong>:{" "}
-                  {formData.secondContact.phone}
+                  <strong>{data.secondContact?.name}</strong>:{" "}
+                  {data.secondContact?.phone}
                 </span>
               </p>
             </div>
