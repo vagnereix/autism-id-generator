@@ -17,18 +17,17 @@ export type IdStore = State & Actions;
 
 export const useIdStore = create<IdStore>((set) => ({
   data: {
-    fullName: "Anny Queiroz dos Reis",
+    fullName: "Seu Nome Completo Aqui",
     firstContact: {
-      name: "Andreina Queiroz",
-      phone: "88 99736-5272",
+      name: "Responsável",
+      phone: "88 9 9999-9999",
     },
     secondContact: {
-      name: "Vagneuton Reis",
-      phone: "88 99954-6683",
+      name: "Responsável 2",
+      phone: "88 9 9999-9999",
     },
     address: "Nova Acopiara",
-    diagnosticLink:
-      "https://drive.google.com/file/d/1hcjEiTPz9_RCUuUZqf6kOK6Lb5SZDOnz/view?usp=sharing",
+    diagnosticLink: "https://link-to-your-diagnostic.com",
     additionalInfo: "",
     cid: "6A02",
     dateOfBirth: "2001-02-15",
