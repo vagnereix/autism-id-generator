@@ -1,3 +1,5 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,10 +28,10 @@ export function IdForm() {
   }
 
   return (
-    <>
-      <h2 className="text-2xl font-bold mb-4">Formulário</h2>
+    <div className="p-6 md:p-0">
+      <h2 className="text-2xl font-bold mb-4 text-neutral-50">Formulário</h2>
 
-      <form className="space-y-4">
+      <form className="grid gap-2">
         <div>
           <Label htmlFor="fullName">Nome Completo</Label>
           <Input
@@ -128,6 +130,6 @@ export function IdForm() {
           />
         </div>
       </form>
-    </>
+    </div>
   );
 }

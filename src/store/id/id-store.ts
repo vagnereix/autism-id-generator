@@ -20,11 +20,11 @@ export const useIdStore = create<IdStore>((set) => ({
     fullName: "Seu Nome Completo Aqui",
     firstContact: {
       name: "Responsável",
-      phone: "88 9 9999-9999",
+      phone: "99 9 9999-9999",
     },
     secondContact: {
-      name: "Responsável 2",
-      phone: "88 9 9999-9999",
+      name: "Responsável",
+      phone: "99 9 9999-9999",
     },
     address: "Nova Acopiara",
     diagnosticLink: "https://link-to-your-diagnostic.com",
